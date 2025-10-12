@@ -34,7 +34,7 @@ function FormRegister() {
             id="lastName"
             placeholder="Pérez"
             className="bg-background"
-            {...register("last_name", { required: true })}
+            {...register("lastName", { required: true })}
           />
         </div>
       </div>

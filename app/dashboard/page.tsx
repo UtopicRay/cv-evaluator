@@ -1,8 +1,10 @@
-import { DashboardLayout } from "@/components/dashboard-layout"
-import { CVCard } from "@/components/cv-card"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Upload, TrendingUp, Award, FileText } from "lucide-react"
+"use client";
+import { DashboardLayout } from "@/components/dashboard-layout";
+import { CVCard } from "@/components/cv-card";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Upload, TrendingUp, Award, FileText } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 // Mock data
 const cvs = [
@@ -34,9 +36,10 @@ const cvs = [
     date: "2024-12-28",
     status: "excellent" as const,
   },
-]
+];
 
 export default function DashboardPage() {
+  const router = useRouter();
   return (
     <DashboardLayout>
       <div className="space-y-8">
@@ -44,9 +47,11 @@ export default function DashboardPage() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-            <p className="text-muted-foreground">Gestiona y analiza tus currículums</p>
+            <p className="text-muted-foreground">
+              Gestiona y analiza tus currículums
+            </p>
           </div>
-          <Button size="lg">
+          <Button size="lg" onClick={() => router.push("/dashboard/upload")}>
             <Upload className="mr-2 h-5 w-5" />
             Subir Nuevo CV
           </Button>
@@ -62,7 +67,9 @@ export default function DashboardPage() {
               <span className="text-2xl font-bold">4</span>
             </div>
             <p className="text-sm font-medium mb-1">CVs Analizados</p>
-            <p className="text-xs text-muted-foreground">Total de currículums</p>
+            <p className="text-xs text-muted-foreground">
+              Total de currículums
+            </p>
           </Card>
 
           <Card className="p-6 bg-card border-border">
@@ -84,7 +91,9 @@ export default function DashboardPage() {
               <span className="text-2xl font-bold">92</span>
             </div>
             <p className="text-sm font-medium mb-1">Mejor Score</p>
-            <p className="text-xs text-muted-foreground">CV Marketing Manager</p>
+            <p className="text-xs text-muted-foreground">
+              CV Marketing Manager
+            </p>
           </Card>
         </div>
 
@@ -99,5 +108,5 @@ export default function DashboardPage() {
         </div>
       </div>
     </DashboardLayout>
-  )
+  );
 }

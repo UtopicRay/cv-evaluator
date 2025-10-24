@@ -3,8 +3,11 @@ import React from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 function FormRegister() {
+  const router = useRouter();
   const { register, handleSubmit } = useForm();
   const onSubmit = handleSubmit(async (data) => {
     if (data.password !== data.confirmPassword) {
@@ -15,6 +18,10 @@ function FormRegister() {
       method: "POST",
       body: JSON.stringify(data),
     });
+    if (res.ok) {
+      toast("Usuario registrado con éxito");
+      router.push("/login");
+    }
   });
   return (
     <form onSubmit={onSubmit} className="space-y-4">

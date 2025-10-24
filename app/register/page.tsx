@@ -1,71 +1,27 @@
 "use client";
 import ButtonSocialAuth from "@/components/button-social-auth";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { FileText } from "lucide-react";
 import Link from "next/link";
 import {
   IconBrandGoogleFilled,
-  IconBrandLinkedin,
   IconBrandLinkedinFilled,
 } from "@tabler/icons-react";
 import FormRegister from "@/components/form-register";
+import LeftSideInfo from "@/components/left-side-info";
+import { infoDetails } from "@/const";
 
 export default function RegisterPage() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-8 items-center">
         {/* Left side - Illustration/Info */}
-        <div className="hidden lg:block">
-          <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              <FileText className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold">CVScore</span>
-            </div>
-            <h1 className="text-4xl font-bold text-balance leading-tight">
-              Comienza a mejorar tu CV hoy
-            </h1>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              Únete a miles de profesionales que han transformado sus
-              currículums con nuestra plataforma impulsada por IA.
-            </p>
-            <div className="space-y-4 pt-8">
-              <div className="flex items-start gap-3">
-                <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <div className="h-2 w-2 rounded-full bg-primary" />
-                </div>
-                <div>
-                  <p className="font-medium">Gratis para comenzar</p>
-                  <p className="text-sm text-muted-foreground">
-                    Sin tarjeta de crédito requerida
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="h-6 w-6 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <div className="h-2 w-2 rounded-full bg-accent" />
-                </div>
-                <div>
-                  <p className="font-medium">Análisis ilimitados</p>
-                  <p className="text-sm text-muted-foreground">
-                    Evalúa todos tus CVs
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="h-6 w-6 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <div className="h-2 w-2 rounded-full bg-success" />
-                </div>
-                <div>
-                  <p className="font-medium">Resultados instantáneos</p>
-                  <p className="text-sm text-muted-foreground">
-                    Feedback en tiempo real
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <LeftSideInfo
+          title="Comienza a mejorar tu CV hoy"
+          details={infoDetails.slice(0, 3)}
+          description="Únete a miles de profesionales que han transformado sus currículums
+          con nuestra plataforma impulsada por IA."
+        />
 
         {/* Right side - Register Form */}
         <Card className="p-8 bg-card border-border">
@@ -88,7 +44,7 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            {/* <div className="grid grid-cols-2 gap-3">
               <ButtonSocialAuth text="Google">
                 <IconBrandGoogleFilled className="mr-2" size={16} stroke={2} />
               </ButtonSocialAuth>
@@ -99,7 +55,7 @@ export default function RegisterPage() {
                   stroke={2}
                 />
               </ButtonSocialAuth>
-            </div>
+            </div> */}
 
             <p className="text-center text-sm text-muted-foreground">
               ¿Ya tienes una cuenta?{" "}

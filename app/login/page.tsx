@@ -15,6 +15,8 @@ import React from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { infoDetails } from "@/const";
+import { get } from "http";
+import { getUser } from "@/lib/query";
 
 export default function LoginPage(e: React.FormEvent) {
   const { handleSubmit, register } = useForm();
@@ -23,7 +25,6 @@ export default function LoginPage(e: React.FormEvent) {
     await handleLogin(data);
   });
   async function handleLogin(data: FieldValues) {
-    e.preventDefault;
     const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: {
@@ -32,9 +33,17 @@ export default function LoginPage(e: React.FormEvent) {
       body: JSON.stringify(data),
     });
     if (res.ok) {
+       const user= await res.json().then((resData) => resData.user);
+      if (user) {
+        localStorage.setItem("user", JSON.stringify(user));
+      }
       router.push("/dashboard");
+    return;
     }
-    toast("Funcionalidad de inicio de sesión no implementada aún");
+    const resData = await res.json();
+    toast.error(
+      resData.message || "Ocurrió un error durante el inicio de sesión",
+    );
   }
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">

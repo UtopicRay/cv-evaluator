@@ -24,8 +24,8 @@ function LeftSideInfo({ title, description,details }: LeftSideInfoProps) {
         </p>
         <div className="space-y-4 pt-8">
           {details.map((item, index) => (
-            <div className="flex items-start gap-3">
-              <InfoDetails {...item} key={index} />
+            <div key={index} className="flex items-start gap-3">
+              <InfoDetails {...item} />
             </div>
           ))}
         </div>

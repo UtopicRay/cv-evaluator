@@ -57,6 +57,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  cvs           CV[]
  
   @@map("users")
 }
@@ -68,4 +69,123 @@ model VerificationToken {
  
   @@unique([identifier, token])
   @@map("verification_tokens")
+}
+
+model CV {
+  id              String   @id @default(cuid())
+  userId          String
+  
+  // Información del archivo
+  fileName        String
+  originalName    String
+  fileSize        Int      // En bytes
+  fileUrl         String   // URL en storage (S3, Supabase, etc)
+  mimeType        String   // "application/pdf", "application/docx"
+  
+  // Contenido extraído
+  rawText         String   @db.Text // Texto completo extraído del PDF
+  
+  // Score principal
+  overallScore    Float?   // 0-100
+  scoreGrade      String?  // "A", "B", "C", "D", "F"
+  
+  // Estado
+  status          CVStatus @default(PENDING)
+  
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  analyzedAt      DateTime?
+  
+  // Relaciones
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  analyses        CVAnalysis[]
+  sections        CVSection[]
+  
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum CVStatus {
+  PENDING       // Subido, esperando análisis
+  PROCESSING    // En proceso de análisis
+  COMPLETED     // Análisis completado
+  ERROR         // Error en el análisis
+}
+
+// ============================================
+// ANÁLISIS DETALLADO DEL CV
+// ============================================
+
+model CVAnalysis {
+  id              String   @id @default(cuid())
+  cvId            String
+  
+  // Análisis por secciones
+  experienceScore Float?   // 0-100
+  educationScore  Float?   // 0-100
+  skillsScore     Float?   // 0-100
+  formatScore     Float?   // 0-100
+  keywordsScore   Float?   // 0-100
+  
+  // Feedback detallado
+  strengths       Json     // Array de strings: ["Experiencia sólida en...", "Buena estructura..."]
+  weaknesses      Json     // Array de strings: ["Falta información de contacto", ...]
+  suggestions     Json     // Array de strings: ["Agregar certificaciones", ...]
+  
+  // Keywords detectadas
+  detectedSkills  Json     // Array: ["JavaScript", "React", "Node.js"]
+  missingKeywords Json     // Keywords que deberían estar
+  
+  // ATS (Applicant Tracking System) Score
+  atsScore        Float?   // Qué tan bien pasa filtros automáticos
+  
+  // Metadata del análisis
+  aiModel         String   // "gpt-4", "gpt-3.5-turbo"
+  tokensUsed      Int?     // Para tracking de costos
+  analysisTime    Int?     // Tiempo en segundos
+  
+  createdAt       DateTime @default(now())
+  
+  // Relación
+  cv              CV       @relation(fields: [cvId], references: [id], onDelete: Cascade)
+  
+  @@index([cvId])
+}
+
+// ============================================
+// SECCIONES DEL CV (Parseadas)
+// ============================================
+
+model CVSection {
+  id          String      @id @default(cuid())
+  cvId        String
+  
+  type        SectionType
+  title       String?     // "Work Experience", "Education", etc.
+  content     String      @db.Text
+  order       Int         // Orden en el CV
+  
+  // Metadata específica por tipo
+  metadata    Json?       // Flexible para cada tipo de sección
+  
+  createdAt   DateTime    @default(now())
+  
+  cv          CV          @relation(fields: [cvId], references: [id], onDelete: Cascade)
+  
+  @@index([cvId])
+  @@index([type])
+}
+
+enum SectionType {
+  CONTACT
+  SUMMARY
+  EXPERIENCE
+  EDUCATION
+  SKILLS
+  CERTIFICATIONS
+  LANGUAGES
+  PROJECTS
+  OTHER
 }

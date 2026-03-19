@@ -17,6 +17,7 @@ import FormCvUpload from "@/components/form-cv-upload";
 import { Card } from "@/components/ui/card";
 import { AnalyzingAnimation } from "@/components/analyzing-animation";
 import Link from "next/link";
+import UseAnalizeDocument from "@/hooks/analize-document";
 
 export default function UploadPage() {
   const router = useRouter();
@@ -27,8 +28,35 @@ export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const { analyzeCVWithAI } = UseAnalizeDocument();
+  const [userId, setUserId] = useState<string | null>(null);
 
-  const isFormValid= jobTitle.length >=3 && jobTitle.length <=100 && industry !=="";  
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      setUserId(user.id);
+    }
+  }, []);
+
+  const isFormValid =
+    jobTitle.length >= 3 && jobTitle.length <= 100 && industry !== "";
+
+  const fileToBase64 = async (selectedFile: File): Promise<string> => {
+    const buffer = await selectedFile.arrayBuffer();
+    let binary = "";
+    const bytes = new Uint8Array(buffer);
+    const chunkSize = 0x8000;
+
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      const chunk = bytes.subarray(i, i + chunkSize);
+      binary += String.fromCharCode(...chunk);
+    }
+
+    return btoa(binary);
+  };
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
     if (currentStep === 1) {
@@ -41,7 +69,7 @@ export default function UploadPage() {
       if (!industry) {
         newErrors.industry = "Debes seleccionar un área de trabajo";
       }
-    } 
+    }
     setErrors(newErrors);
 
     return Object.keys(newErrors).length === 0;
@@ -49,20 +77,92 @@ export default function UploadPage() {
 
   const handleAnalyze = async () => {
     if (currentStep === 1) {
-      validateForm();
-      if(isFormValid){
-        setCurrentStep(2)
+      const isValid = validateForm();
+      if (isValid) {
+        setCurrentStep(2);
       }
       return;
     }
     if (currentStep === 2) {
+      if (!file) {
+        setErrors((prev) => ({
+          ...prev,
+          file: "Debes subir un archivo antes de continuar",
+        }));
+        return;
+      }
+      if (!userId) {
+        setErrors((prev) => ({
+          ...prev,
+          file: "No se pudo identificar al usuario",
+        }));
+        return;
+      }
+
+      setErrors({});
+      setIsAnalyzing(true);
       setCurrentStep(3);
-      return;
+
+      try {
+        const cvBase64 = await fileToBase64(file);
+        const uploadFormData = new FormData();
+        uploadFormData.append("file", file);
+        uploadFormData.append("userId", userId);
+
+        const uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          body: uploadFormData,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error("No se pudo subir el archivo");
+        }
+
+        const uploadResult = await uploadResponse.json();
+
+        const result = await analyzeCVWithAI({
+          targetIndustry: industry,
+          targetJobTitle: jobTitle,
+          experienceLevel: experienceLevel,
+          cvText: `Archivo adjunto: ${file.name}`,
+          cvBase64,
+          cvMimeType: file.type || "application/pdf",
+        });
+
+        const response = await fetch("/api/cv", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId,
+            fileName: uploadResult.filePath,
+            originalName: file.name,
+            fileSize: file.size,
+            fileUrl: uploadResult.fileUrl,
+            mimeType: file.type || "application/pdf",
+            rawText: `Archivo adjunto: ${file.name}`,
+            analysis: result,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("No se pudo guardar el análisis");
+        }
+
+        const saved = await response.json();
+        router.push(`/dashboard/cv/${saved.id}`);
+      } catch (error) {
+        console.error(error);
+        setErrors((prev) => ({
+          ...prev,
+          file: "Ocurrió un error durante el análisis",
+        }));
+        setCurrentStep(2);
+      } finally {
+        setIsAnalyzing(false);
+      }
     }
-    setIsAnalyzing(true);
-    // Simulate analysis
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    router.push("/dashboard/cv/1");
   };
 
   return (

@@ -13,19 +13,18 @@ export async function POST(request: Request) {
       res.password,
       findUser?.password || ""
     );
-    console.log(checkPassword);
     if (!findUser || !checkPassword) {
       return NextResponse.json(
         "El usuario no se encuentra registrado o la contraseña es incorrecta",
         { status: 400 }
       );
     }
-    return NextResponse.json("login user");
+    return NextResponse.json({ message: "login user", user: findUser }, { status: 200 });
   } catch (err) {
     console.log(err);
-    return NextResponse.json("Internal error", {
+    return NextResponse.json({ message: "Internal error" }, {
       status: 500,
-      statusText: err.message as string,
+      statusText: (err as Error).message,
     });
   }
 }

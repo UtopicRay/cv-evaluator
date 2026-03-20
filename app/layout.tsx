@@ -3,7 +3,8 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
-import { Toast } from "@/components/ui/toast";
+
+import { UserContextProvider } from "@/context/user-context";
 
 export const metadata: Metadata = {
   title: "Cvscore",
@@ -19,8 +20,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        {children}
-        <Analytics />
+        <UserContextProvider>
+          {children}
+          <Analytics />
+        </UserContextProvider>
       </body>
     </html>
   );

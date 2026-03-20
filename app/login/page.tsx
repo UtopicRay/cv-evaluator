@@ -10,41 +10,25 @@ import {
   IconBrandLinkedinFilled,
 } from "@tabler/icons-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React from "react";
-import { FieldValues, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { infoDetails } from "@/const";
-import { get } from "http";
-import { getUser } from "@/lib/query";
+import { useUserContext } from "@/context/user-context";
+ "@/context/user-context";
 
 export default function LoginPage(e: React.FormEvent) {
   const { handleSubmit, register } = useForm();
-  const router = useRouter();
+  const { handleLogin } = useUserContext();
   const onSubmit = handleSubmit(async (data) => {
-    await handleLogin(data);
-  });
-  async function handleLogin(data: FieldValues) {
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    if (res.ok) {
-       const user= await res.json().then((resData) => resData.user);
-      if (user) {
-        localStorage.setItem("user", JSON.stringify(user));
-      }
-      router.push("/dashboard");
-    return;
+    const toastId = toast.loading("Procesando inicio de sesión...");
+    try {
+      await handleLogin(data);
+    } finally {
+      toast.dismiss(toastId);
     }
-    const resData = await res.json();
-    toast.error(
-      resData.message || "Ocurrió un error durante el inicio de sesión",
-    );
-  }
+  });
+
+  
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-8 items-center">

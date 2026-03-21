@@ -49,3 +49,13 @@ export interface ScoreItem{
   label: string;
   value: number | null;
 }
+export type CVItem = {
+  id: string
+  originalName: string
+  analyzedAt: Date | string | null
+  createdAt: Date | string
+  overallScore: number | null
+  scoreGrade: string | null
+  status: string
+  fileUrl: string
+}

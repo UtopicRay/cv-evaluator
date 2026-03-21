@@ -109,3 +109,40 @@ export async function POST(request: Request) {
     )
   }
 }
+
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const userId = searchParams.get("userId")
+
+    if (!userId) {
+      return NextResponse.json(
+        { message: "Falta el userId" },
+        { status: 400 },
+      )
+    }
+
+    const cvs = await prisma.cV.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        originalName: true,
+        analyzedAt: true,
+        createdAt: true,
+        overallScore: true,
+        scoreGrade: true,
+        status: true,
+        fileUrl: true,
+      },
+    })
+
+    return NextResponse.json(cvs, { status: 200 })
+  } catch (error) {
+    console.error("Error al listar los CVs:", error)
+    return NextResponse.json(
+      { message: "Error interno al listar los CVs" },
+      { status: 500 },
+    )
+  }
+}

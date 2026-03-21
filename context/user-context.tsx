@@ -4,13 +4,14 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 interface User {
-  id: number;
+  id: string;
   name: string;
   email: string;
   lastName?: string;
 }
 interface UserContextType {
   user: User | null;
+  isLoadingUser: boolean;
   setUser: (user: User | null) => void;
   handleLogin: (data: any) => Promise<void>;
   logout: () => void;
@@ -20,6 +21,7 @@ const UserContext = createContext<UserContextType | null>(null);
 
 function UserContextProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
   const router = useRouter();
   
     async function handleLogin(data: any) {
@@ -42,6 +44,7 @@ function UserContextProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem("user", JSON.stringify(userData));
         setUser(userData);
       }
+      setIsLoadingUser(false);
       router.push("/dashboard");
       return;
     }
@@ -63,16 +66,18 @@ function UserContextProvider({ children }: { children: React.ReactNode }) {
       };
       setUser(userData);
     }
+    setIsLoadingUser(false);
   }, []);
 
   async function logout() {
     localStorage.removeItem("user");
     setUser(null);
+    setIsLoadingUser(false);
     router.push("/");
   }
 
   return (
-    <UserContext.Provider value={{ user, setUser, handleLogin, logout }}>
+    <UserContext.Provider value={{ user, isLoadingUser, setUser, handleLogin, logout }}>
       {children}
     </UserContext.Provider>
   );

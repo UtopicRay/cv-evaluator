@@ -14,13 +14,18 @@ function FormRegister() {
       console.error("Las contraseñas no coinciden");
       return;
     }
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-    if (res.ok) {
-      toast("Usuario registrado con éxito");
-      router.push("/login");
+    const toastId = toast.loading("Procesando registro...");
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        toast("Usuario registrado con éxito");
+        router.push("/login");
+      }
+    } finally {
+      toast.dismiss(toastId);
     }
   });
   return (

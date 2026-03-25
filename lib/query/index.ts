@@ -86,3 +86,28 @@ export async function getUserById(id: string) {
     return { error: "Error fetching user" } ;
   }
 }
+
+export async function getJobById(id: string) {
+  try {
+    const job = await prisma.job.findUnique({
+      where: { id },
+      include: {
+        analyses: {
+          orderBy: { createdAt: "desc" },
+          take: 1,
+        },
+        cv: {
+          select: {
+            id: true,
+            originalName: true,
+          },
+        },
+      },
+    });
+    if (!job) return { error: "Job not found" };
+    return job;
+  } catch (error) {
+    console.error("Error fetching job:", error);
+    return { error: "Error fetching job" };
+  }
+}

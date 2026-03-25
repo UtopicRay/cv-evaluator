@@ -22,9 +22,10 @@ function DeleteCvDialog({ id, handleDelete }: DeleteCvDialogProps) {
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button
-          variant="destructive"
+          variant="ghost"
           size="icon"
           aria-label="Eliminar CV"
+          className="h-10 w-10 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
         >
           <Trash2 className="h-4 w-4" />
         </Button>

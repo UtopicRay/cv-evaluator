@@ -7,7 +7,7 @@ interface User {
   id: string;
   name: string;
   email: string;
-  lastName?: string;
+  lastName: string;
 }
 interface UserContextType {
   user: User | null;

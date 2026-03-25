@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 import { UserContextProvider } from "@/context/user-context";
+import { DashboardLayout } from "@/components/dashboard-layout";
 
 export const metadata: Metadata = {
   title: "Cvscore",

@@ -130,3 +130,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+.inputField {
+  @apply h-12 border-0 bg-muted/70 focus-visible:ring-1 focus-visible:ring-primary;
+}
+
+.inputLabel {
+  @apply block text-xs font-bold uppercase tracking-widest text-muted-foreground;
+}

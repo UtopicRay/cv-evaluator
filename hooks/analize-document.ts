@@ -1,5 +1,6 @@
 import { generateCVAnalysisPrompt } from "@/lib/promts/analyze-promt";
-import { CVAnalysisInput, CVAnalysisResponse } from "@/type";
+import { CVAnalysisInput, CVAnalysisResponse, JobCVAnalysisInput, JobCVAnalysisResponse } from "@/type";
+import { analyzeJobCVComparison } from "@/lib/analyze-job-cv-utils";
 import { GoogleGenAI } from "@google/genai";
 
 export default function UseAnalizeDocument() {
@@ -179,5 +180,48 @@ export default function UseAnalizeDocument() {
       throw new Error("scoreGrade debe ser A, B, C, D o F");
     }
   }
-  return { analyzeCVWithAI };
+
+  async function analyzeCVvsJob(
+    input: JobCVAnalysisInput,
+    maxRetries: number = 3
+  ): Promise<JobCVAnalysisResponse> {
+    return analyzeJobCVComparison(input, maxRetries);
+  }
+
+function validateJobCVAnalysisResponse(analysis: any): void {
+  const requiredFields = [
+    'matchScore',
+    'overallScore',
+    'scoreGrade',
+    'scores',
+    'matching',
+    'feedback',
+    'recommendations',
+    'improvements',
+    'detailedAnalysis',
+    'summary',
+    'estimatedInterviewChance',
+  ];
+
+  for (const field of requiredFields) {
+    if (!(field in analysis)) {
+      throw new Error(`Campo requerido faltante: ${field}`);
+    }
+  }
+
+  // Validar scores
+  if (
+    analysis.matchScore < 0 ||
+    analysis.matchScore > 100 ||
+    analysis.overallScore < 0 ||
+    analysis.overallScore > 100
+  ) {
+    throw new Error('Scores fuera del rango válido');
+  }
+
+  if (!analysis.recommendations.hasOwnProperty('shouldApply')) {
+    throw new Error('Falta campo shouldApply');
+  }
+}
+  return { analyzeCVWithAI, analyzeCVvsJob };
 }

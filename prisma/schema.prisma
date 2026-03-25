@@ -1,181 +1,213 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../lib/generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_DATABASE_URL")
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String  @map("user_id")
-  type               String
-  provider           String
-  providerAccountId  String  @map("provider_account_id")
-  refresh_token      String? @db.Text
-  access_token       String? @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String? @db.Text
-  session_state      String?
- 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([provider, providerAccountId])
   @@map("accounts")
 }
- 
+
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique @map("session_token")
   userId       String   @map("user_id")
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   @@map("sessions")
 }
- 
+
 model User {
-  id            String    @id @default(cuid())
+  id            String          @id @default(cuid())
   name          String
-  lastName      String   @map("last_name")
-  email         String?   @unique
+  lastName      String          @map("last_name")
+  email         String?         @unique
   password      String
-  lastLogin     DateTime? @map("last_login")
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
+  lastLogin     DateTime?       @map("last_login")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
   image         String?
+  cvs           CV[]
+  jobs          Job[]
+  jobCVAnalyses JobCVAnalysis[]
   accounts      Account[]
   sessions      Session[]
-  cvs           CV[]
- 
+
   @@map("users")
 }
- 
+
 model VerificationToken {
   identifier String
   token      String
   expires    DateTime
- 
+
   @@unique([identifier, token])
   @@map("verification_tokens")
 }
 
 model CV {
-  id              String   @id @default(cuid())
-  userId          String
-  
-  // Información del archivo
-  fileName        String
-  originalName    String
-  fileSize        Int      // En bytes
-  fileUrl         String   // URL en storage (S3, Supabase, etc)
-  mimeType        String   // "application/pdf", "application/docx"
-  
-  // Contenido extraído
-  rawText         String   @db.Text // Texto completo extraído del PDF
-  
-  // Score principal
-  overallScore    Float?   // 0-100
-  scoreGrade      String?  // "A", "B", "C", "D", "F"
-  
-  // Estado
-  status          CVStatus @default(PENDING)
-  
-  // Metadata
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  analyzedAt      DateTime?
-  
-  // Relaciones
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  analyses        CVAnalysis[]
-  sections        CVSection[]
-  
+  id           String          @id @default(cuid())
+  userId       String
+  fileName     String
+  originalName String
+  fileSize     Int
+  fileUrl      String
+  mimeType     String
+  rawText      String
+  overallScore Float?
+  scoreGrade   String?
+  status       CVStatus        @default(PENDING)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  analyzedAt   DateTime?
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  analyses     CVAnalysis[]
+  sections     CVSection[]
+  jobs         Job[]           @relation("CVJobs")
+  jobAnalyses  JobCVAnalysis[]
+
   @@index([userId])
   @@index([status])
   @@index([createdAt])
 }
 
-enum CVStatus {
-  PENDING       // Subido, esperando análisis
-  PROCESSING    // En proceso de análisis
-  COMPLETED     // Análisis completado
-  ERROR         // Error en el análisis
-}
-
-// ============================================
-// ANÁLISIS DETALLADO DEL CV
-// ============================================
-
 model CVAnalysis {
   id              String   @id @default(cuid())
   cvId            String
-  
-  // Análisis por secciones
-  experienceScore Float?   // 0-100
-  educationScore  Float?   // 0-100
-  skillsScore     Float?   // 0-100
-  formatScore     Float?   // 0-100
-  keywordsScore   Float?   // 0-100
-  
-  // Feedback detallado
-  strengths       Json     // Array de strings: ["Experiencia sólida en...", "Buena estructura..."]
-  weaknesses      Json     // Array de strings: ["Falta información de contacto", ...]
-  suggestions     Json     // Array de strings: ["Agregar certificaciones", ...]
-  
-  // Keywords detectadas
-  detectedSkills  Json     // Array: ["JavaScript", "React", "Node.js"]
-  missingKeywords Json     // Keywords que deberían estar
-  
-  // ATS (Applicant Tracking System) Score
-  atsScore        Float?   // Qué tan bien pasa filtros automáticos
-  
-  // Metadata del análisis
-  aiModel         String   // "gpt-4", "gpt-3.5-turbo"
-  tokensUsed      Int?     // Para tracking de costos
-  analysisTime    Int?     // Tiempo en segundos
-  
+  experienceScore Float?
+  educationScore  Float?
+  skillsScore     Float?
+  formatScore     Float?
+  keywordsScore   Float?
+  strengths       Json
+  weaknesses      Json
+  suggestions     Json
+  detectedSkills  Json
+  missingKeywords Json
+  atsScore        Float?
+  aiModel         String
+  tokensUsed      Int?
+  analysisTime    Int?
   createdAt       DateTime @default(now())
-  
-  // Relación
   cv              CV       @relation(fields: [cvId], references: [id], onDelete: Cascade)
-  
+
   @@index([cvId])
 }
 
-// ============================================
-// SECCIONES DEL CV (Parseadas)
-// ============================================
-
 model CVSection {
-  id          String      @id @default(cuid())
-  cvId        String
-  
-  type        SectionType
-  title       String?     // "Work Experience", "Education", etc.
-  content     String      @db.Text
-  order       Int         // Orden en el CV
-  
-  // Metadata específica por tipo
-  metadata    Json?       // Flexible para cada tipo de sección
-  
-  createdAt   DateTime    @default(now())
-  
-  cv          CV          @relation(fields: [cvId], references: [id], onDelete: Cascade)
-  
+  id        String      @id @default(cuid())
+  cvId      String
+  type      SectionType
+  title     String?
+  content   String
+  order     Int
+  metadata  Json?
+  createdAt DateTime    @default(now())
+  cv        CV          @relation(fields: [cvId], references: [id], onDelete: Cascade)
+
   @@index([cvId])
   @@index([type])
+}
+
+model Job {
+  id               String          @id @default(cuid())
+  title            String
+  description      String
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  position         String
+  company          String?
+  remote           Boolean         @default(false)
+  cvId             String?
+  experienceLevel  String?
+  niceToHave       Json?
+  preferredSkills  Json?
+  requiredSkills   Json?
+  requirements     Json?
+  responsibilities Json?
+  status           JobStatus       @default(ACTIVE)
+  userId           String
+  cv               CV?             @relation("CVJobs", fields: [cvId], references: [id])
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  analyses         JobCVAnalysis[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model JobCVAnalysis {
+  id                String   @id @default(cuid())
+  jobId             String
+  cvId              String
+  userId            String
+  matchScore        Float
+  overallScore      Float
+  scoreGrade        String
+  skillsMatch       Float
+  experienceMatch   Float
+  educationMatch    Float?
+  keywordsMatch     Float
+  matchedSkills     Json
+  missingSkills     Json
+  matchedKeywords   Json
+  missingKeywords   Json
+  strengths         Json
+  weaknesses        Json
+  suggestions       Json
+  shouldApply       Boolean
+  applicationTips   Json
+  coverLetterTips   Json?
+  sectionsToImprove Json
+  priorityChanges   Json
+  aiModel           String
+  tokensUsed        Int?
+  analysisTime      Int?
+  createdAt         DateTime @default(now())
+  cv                CV       @relation(fields: [cvId], references: [id], onDelete: Cascade)
+  job               Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, cvId])
+  @@index([userId])
+  @@index([jobId])
+  @@index([cvId])
+  @@index([matchScore])
+}
+
+enum JobStatus {
+  ACTIVE
+  APPLIED
+  ARCHIVED
+  CLOSED
+}
+
+enum CVStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  ERROR
 }
 
 enum SectionType {

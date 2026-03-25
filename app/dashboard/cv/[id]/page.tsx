@@ -2,8 +2,6 @@ import CVAnalyzeCard from "@/components/cv/cv-analaze-card"
 import CVKeywords from "@/components/cv/cv-keywords"
 import CVSection from "@/components/cv/cv-section"
 import { CVWeaknessStrengthCard } from "@/components/cv/cv-weakness-strengths"
-import { DashboardLayout } from "@/components/dashboard-layout"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { gradeMeta } from "@/lib/cv/utils"
@@ -11,6 +9,7 @@ import { getCv } from "@/lib/query"
 import { AlertCircle, ArrowLeft, CheckCircle2, Download } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import { Badge } from "@/components/ui/badge";
 
 
 
@@ -56,10 +55,9 @@ export default async function CVDetailPage({ params }: { params: { id: string } 
   ].filter((item) => typeof item.value === "number")
 
   return (
-    <DashboardLayout>
       <div className="space-y-8">
         <div className="flex flex-wrap items-center gap-4">
-          <Link href="/dashboard">
+          <Link href="/dashboard/cv">
             <Button variant="ghost" size="icon">
               <ArrowLeft className="h-5 w-5" />
             </Button>
@@ -197,6 +195,5 @@ export default async function CVDetailPage({ params }: { params: { id: string } 
           </Card>
         )}
       </div>
-    </DashboardLayout>
   )
 }

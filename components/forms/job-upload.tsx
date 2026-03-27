@@ -23,7 +23,7 @@ import { useFetchData } from "@/hooks/fetch-data";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-const fomSchema = z.object({
+const formSchema = z.object({
   title: z.string().min(3, "El titulo del puesto es obligatorio"),
   position: z.string().min(2, "El nivel del puesto es obligatorio"),
   company: z.string().optional(),
@@ -41,8 +41,8 @@ function JobUploadForm() {
   const [cvs, setCvs] = useState<{ id: string; originalName: string }[]>([]);
   const { fecthCvs, loading } = useFetchData();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const form = useForm<z.infer<typeof fomSchema>>({
-    resolver: zodResolver(fomSchema),
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
       position: "",
@@ -72,7 +72,7 @@ function JobUploadForm() {
     };
   }, [fecthCvs, user?.id]);
 
-  function onSubmit(data: z.infer<typeof fomSchema>) {
+  function onSubmit(data: z.infer<typeof formSchema>) {
     if (!user?.id) {
       toast.error("No se pudo identificar al usuario");
       return;

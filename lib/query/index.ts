@@ -1,4 +1,3 @@
-import { get } from "http";
 import { prisma } from "../prisma";
 
 export async function getUser(email: string) {

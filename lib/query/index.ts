@@ -1,16 +1,7 @@
+import { CVItem } from "@/type";
 import { prisma } from "../prisma";
 
-export async function getUser(email: string) {
-  const user = await prisma.user.findFirst({ where: { email } });
-  if (!user) return null;
-  const userProps = {
-    id: user.id,
-    email: user.email,
-    name: user.name,
-    lastName: user.lastName,
-  };
-  return userProps;
-}
+
 export async function getCv(id: string) {
   try {
     const result = await prisma.cV.findUnique({
@@ -31,10 +22,10 @@ export async function getCv(id: string) {
     return null;
   }
 }
-export async function getCvsByUserId(userId: string) {
+export async function getCvsByUserId(userId: string): Promise<CVItem[] | { error: string }> {
   try {
-    const isFindUser = await getUser(userId);
-    if (!isFindUser) return { error: "Usuario no encontrado" };
+    const isFindUser = await getUserById(userId);
+    if ("error" in isFindUser) return { error: "Usuario no encontrado" };
     const result = await prisma.cV.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },

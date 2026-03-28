@@ -1,12 +1,7 @@
 "use client";
 import ButtonSocialAuth from "@/components/button-social-auth";
 import { Card } from "@/components/ui/card";
-import { FileText } from "lucide-react";
 import Link from "next/link";
-import {
-  IconBrandGoogleFilled,
-  IconBrandLinkedinFilled,
-} from "@tabler/icons-react";
 import FormRegister from "@/components/form-register";
 import LeftSideInfo from "@/components/left-side-info";
 import { infoDetails } from "@/const";
@@ -43,20 +38,6 @@ export default function RegisterPage() {
                 </span>
               </div>
             </div>
-
-            {/* <div className="grid grid-cols-2 gap-3">
-              <ButtonSocialAuth text="Google">
-                <IconBrandGoogleFilled className="mr-2" size={16} stroke={2} />
-              </ButtonSocialAuth>
-              <ButtonSocialAuth text="LinkedIn">
-                <IconBrandLinkedinFilled
-                  className="mr-2"
-                  size={24}
-                  stroke={2}
-                />
-              </ButtonSocialAuth>
-            </div> */}
-
             <p className="text-center text-sm text-muted-foreground">
               ¿Ya tienes una cuenta?{" "}
               <Link

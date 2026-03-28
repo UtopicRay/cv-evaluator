@@ -11,7 +11,12 @@ export interface CVAnalysisInput {
   targetIndustry: string;
   experienceLevel?: string;
 }
-
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  lastName: string;
+}
 export interface CVAnalysisResponse {
   overallScore: number;
   scoreGrade: string;

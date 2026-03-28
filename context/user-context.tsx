@@ -1,83 +1,14 @@
 'use client'
-import { useRouter } from "next/navigation";
-import { createContext, useContext, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { User } from "@/type";
+import { createContext, useContext } from "react";
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  lastName: string;
-}
-interface UserContextType {
-  user: User | null;
-  isLoadingUser: boolean;
-  setUser: (user: User | null) => void;
-  handleLogin: (data: any) => Promise<void>;
-  logout: () => void;
-}
 
-const UserContext = createContext<UserContextType | null>(null);
 
-function UserContextProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoadingUser, setIsLoadingUser] = useState(true);
-  const router = useRouter();
-  
-    async function handleLogin(data: any) {
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    if (res.ok) {
-      const user = await res.json().then((resData) => resData.user);
-      if (user) {
-        const userData: User = {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          lastName: user.lastName,
-        };
-        localStorage.setItem("user", JSON.stringify(userData));
-        setUser(userData);
-      }
-      setIsLoadingUser(false);
-      router.push("/dashboard");
-      return;
-    }
-    const resData = await res.json();
-    toast.error(
-      resData.message || "Ocurrió un error durante el inicio de sesión",
-    );
-  }
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const user = JSON.parse(storedUser);
-      const userData: User = {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        lastName: user.lastName
-      };
-      setUser(userData);
-    }
-    setIsLoadingUser(false);
-  }, []);
+const UserContext = createContext<Promise<User| null>>(Promise.resolve(null));
 
-  async function logout() {
-    localStorage.removeItem("user");
-    setUser(null);
-    setIsLoadingUser(false);
-    router.push("/");
-  }
-
+function UserContextProvider({ children,userPromise }: { children: React.ReactNode, userPromise: Promise<User> }) {
   return (
-    <UserContext.Provider value={{ user, isLoadingUser, setUser, handleLogin, logout }}>
+    <UserContext.Provider value={userPromise}>
       {children}
     </UserContext.Provider>
   );

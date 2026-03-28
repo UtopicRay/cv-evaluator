@@ -4,7 +4,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export default function LoadingCvs() {
   return (
-    <DashboardLayout>
       <div className="space-y-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="space-y-2">
@@ -39,6 +38,5 @@ export default function LoadingCvs() {
           ))}
         </div>
       </div>
-    </DashboardLayout>
   )
 }

@@ -1,4 +1,8 @@
-import { JobDraft } from "@/type";
+import { cache } from 'react'
+import { JobDraft, User } from "@/type";
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/app/auth"
+import { prisma } from "@/lib/prisma"
 
 export async function uploadJobforAnalysis(data: JobDraft) {
   try {
@@ -32,3 +36,19 @@ export async function uploadJobforAnalysis(data: JobDraft) {
       : new Error("No se pudo crear la oferta");
   }
 }
+
+export const getUser: () => Promise<User | null> = cache(async () => {
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.email) return null
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+  })
+  const userData: User = {
+    id: user?.id || "",
+    name: user?.name || "",
+    email: user?.email || "",
+    lastName: user?.lastName || "",
+  }
+  return userData
+})
+

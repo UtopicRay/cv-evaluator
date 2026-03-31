@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,12 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { FileText, Calendar, Eye } from "lucide-react";
 import Link from "next/link";
 import { CVItem } from "@/type";
-import DeleteCvDialog from "./dialogs/delete-cv-dailog";
+import DeleteDialog from "./dialogs/delete-dailog";
 import { useFetchData } from "@/hooks/fetch-data";
+import { deleteCvDialogMessages } from "@/const/messages";
 
 type CVCardProps = CVItem & {
-  onDeleted?: (id: string) => void
-}
+  onDeleted?: (id: string) => void;
+};
 
 export function CVCard({
   id,
@@ -21,14 +22,14 @@ export function CVCard({
   status,
   onDeleted,
 }: CVCardProps) {
-  const { fetchDeleteCv } = useFetchData()
+  const { fetchDeleteCv } = useFetchData();
 
   const handleDelete = async (cvId: string) => {
-    const deleted = await fetchDeleteCv(cvId)
+    const deleted = await fetchDeleteCv(cvId);
     if (deleted) {
-      onDeleted?.(cvId)
+      onDeleted?.(cvId);
     }
-  }
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -101,7 +102,9 @@ export function CVCard({
                 <span className="text-xs text-muted-foreground">/100</span>
               </span>
             ) : (
-              <span className="text-2xl font-black text-muted-foreground">--</span>
+              <span className="text-2xl font-black text-muted-foreground">
+                --
+              </span>
             )}
           </div>
         </div>
@@ -114,7 +117,12 @@ export function CVCard({
             </Button>
           </Link>
           <div className="flex items-center justify-end">
-            <DeleteCvDialog handleDelete={handleDelete} id={id} />
+            <DeleteDialog
+              title={deleteCvDialogMessages.title}
+              description={deleteCvDialogMessages.description}
+              handleDelete={handleDelete}
+              id={id}
+            />
           </div>
         </div>
       </div>

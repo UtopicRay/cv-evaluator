@@ -15,9 +15,11 @@ import { Trash2 } from "lucide-react";
 
 interface DeleteCvDialogProps {
   id: string;
+  title: string;
+  description: string;
   handleDelete: (id: string) => void;
 }
-function DeleteCvDialog({ id, handleDelete }: DeleteCvDialogProps) {
+function DeleteDialog({ id, title, description, handleDelete }: DeleteCvDialogProps) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -32,10 +34,9 @@ function DeleteCvDialog({ id, handleDelete }: DeleteCvDialogProps) {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Eliminar CV</AlertDialogTitle>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>
-            Esta acción eliminará el CV y su análisis asociado. No se puede
-            deshacer.
+            {description}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -52,4 +53,4 @@ function DeleteCvDialog({ id, handleDelete }: DeleteCvDialogProps) {
   );
 }
 
-export default DeleteCvDialog;
+export default DeleteDialog;

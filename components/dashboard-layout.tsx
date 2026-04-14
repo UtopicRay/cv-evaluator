@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useUserContext } from "@/context/user-context";
+import { signOut } from "next-auth/react";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -30,12 +31,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const { user, logout } = useUserContext();
+  const user = useUserContext();
 
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "CV Analysis", href: "/dashboard/cv", icon: BarChart3 },
-    { name: "History", href: "/dashboard/cv", icon: History },
+    { name: "Jobs", href: "/dashboard/jobs", icon: History },
     { name: "Settings", href: "/dashboard/settings", icon: Settings },
   ];
 
@@ -164,7 +165,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </button>
             <button
               type="button"
-              onClick={logout}
+              onClick={() => signOut()}
               className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-[#515f74] transition hover:bg-white/60 hover:text-red-600"
             >
               <LogOut className="h-4 w-4" />

@@ -1,24 +1,24 @@
 import React from "react";
-import { Card } from "./ui/card";
-import { Label } from "./ui/label";
+import { Card } from "../ui/card";
+import { Label } from "../ui/label";
 import { Briefcase, Building2, HelpCircle } from "lucide-react";
-import { Input } from "./ui/input";
+import { Input } from "../ui/input";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "./ui/tooltip";
+} from "../ui/tooltip";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
+} from "../ui/select";
 import { experienceLevels, industries } from "@/const";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
-import UsageSummary from "./usage-summary";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import UsageSummary from "../usage-summary";
 
 interface FormCvUploadProps {
   setJobTitle: React.Dispatch<React.SetStateAction<string>>;

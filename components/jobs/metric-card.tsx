@@ -25,7 +25,7 @@ function MetricCard({
     { label: "Keywords Match", value: keywordsMatch, icon: CircleHelp },
   ];
   return (
-    <div>
+   <section className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 w-full">
       {metricsInfo.map((metric, index) => (
         <Card key={metric.label} className="border-border/40 bg-card p-5">
           <div className="mb-3 flex items-center justify-between">
@@ -45,7 +45,7 @@ function MetricCard({
           </div>
         </Card>
       ))}
-    </div>
+    </section>
   );
 }
 

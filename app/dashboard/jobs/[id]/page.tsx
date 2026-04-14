@@ -3,12 +3,7 @@ import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  AlertTriangle,
-  ArrowLeft,
-  CheckCircle2,
-  Sparkles,
-} from "lucide-react";
+import { AlertTriangle, ArrowLeft, CheckCircle2, Sparkles } from "lucide-react";
 import { getJobById } from "@/lib/query";
 import AdviceCard from "@/components/jobs/advices-card";
 import WeaknessStrengthSuggestionCard from "@/components/jobs/weakness-strengths-card";
@@ -137,14 +132,12 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
           </Card>
         </div>
       </section>
-      <section className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <MetricCard
-          skillsMatch={skillsMatch}
-          experienceMatch={experienceMatch}
-          educationMatch={educationMatch}
-          keywordsMatch={keywordsMatch}
-        ></MetricCard>
-      </section>
+      <MetricCard
+        skillsMatch={skillsMatch}
+        experienceMatch={experienceMatch}
+        educationMatch={educationMatch}
+        keywordsMatch={keywordsMatch}
+      ></MetricCard>
       <section className="grid grid-cols-1 gap-10 lg:grid-cols-12">
         <div className="space-y-8 lg:col-span-7">
           <Card className="border-border/40 bg-card p-6">

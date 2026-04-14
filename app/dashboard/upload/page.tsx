@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import FormCvUpload from "@/components/form-cv-upload";
+import FormCvUpload from "@/components/forms/form-cv-upload";
 import { Card } from "@/components/ui/card";
 import { AnalyzingAnimation } from "@/components/analyzing-animation";
 import Link from "next/link";

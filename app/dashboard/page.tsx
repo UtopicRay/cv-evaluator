@@ -13,9 +13,6 @@ import {
   getRecentsJobs,
 } from "@/lib/query";
 import {
-  Brain,
-  CheckCircle2,
-  Circle,
   Lightbulb,
   Sparkles,
   Upload,

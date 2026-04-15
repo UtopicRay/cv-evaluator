@@ -2,7 +2,7 @@
 import ButtonSocialAuth from "@/components/button-social-auth";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
-import FormRegister from "@/components/form-register";
+import FormRegister from "@/components/forms/form-register";
 import LeftSideInfo from "@/components/left-side-info";
 import { infoDetails } from "@/const";
 

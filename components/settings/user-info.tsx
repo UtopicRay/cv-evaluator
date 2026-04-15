@@ -1,13 +1,12 @@
-"use client";
 import React from "react";
 import { Input } from "../ui/input";
 import { Card } from "../ui/card";
 import { Button } from "../ui/button";
 import { Camera } from "lucide-react";
-import { useUserContext } from "@/context/user-context";
+import { getUser } from "@/lib/fetching/fetch";
 
-function UserInfo() {
-  const { user } = useUserContext();
+async function UserInfo() {
+  const user= await getUser()
   const initials = user
     ? `${user.name?.charAt(0) ?? ""}${user.lastName?.charAt(0) ?? ""}`.trim()
     : "";

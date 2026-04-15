@@ -128,3 +128,26 @@ export interface JobDraft {
   experienceLevel?: string | null;
   description: string;
 }
+export interface Job extends JobDraft {
+  id: string;
+  createdAt: Date;
+  analyses?: JobCVAnalysisResponse | null;
+}
+export interface BestMatchJobDto {
+  id: string;
+  position: string;
+  company: string|null;
+  analyses: {
+    matchScore: number;
+  }[];
+}
+export interface RecentsJobsDto {
+  id: string;
+  position: string;
+  company: string|null;
+  createdAt: Date;
+  analyses: {
+    matchScore: number;
+    createdAt: Date;
+  }[];
+}

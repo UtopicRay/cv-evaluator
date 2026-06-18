@@ -1,6 +1,7 @@
 import Header from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { getUser } from "@/lib/fetching/fetch";
 import {
   FileText,
   Sparkles,
@@ -12,7 +13,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const user= await getUser(); // Fetch user data (this should be an async function, but for simplicity, we are calling it directly here)
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -39,7 +41,7 @@ export default function HomePage() {
                 Subir CV Gratis
               </Button>
             </Link>
-            <Link href="/dashboard">
+            <Link href={user ? "/dashboard" : "/login"}>
               <Button
                 size="lg"
                 variant="outline"

@@ -1,6 +1,6 @@
 'use client'
 import { User } from "@/type";
-import { createContext, useContext } from "react";
+import { createContext, useContext, use } from "react";
 
 const UserContext = createContext<Promise<User | null>>(Promise.resolve(null));
 
@@ -19,4 +19,11 @@ function useUserContext(){
     }
     return context;
 }
-export {useUserContext,UserContextProvider}
+
+function useUserContextResolved(): User | null {
+    const promise = useUserContext();
+    const user = use(promise);
+    return user;
+}
+
+export {useUserContext, useUserContextResolved, UserContextProvider}

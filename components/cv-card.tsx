@@ -9,6 +9,7 @@ import { CVItem } from "@/type";
 import DeleteDialog from "./dialogs/delete-dailog";
 import { useFetchData } from "@/hooks/fetch-data";
 import { deleteCvDialogMessages } from "@/const/messages";
+import { useRouter } from "next/navigation";
 
 type CVCardProps = CVItem & {
   onDeleted?: (id: string) => void;
@@ -23,12 +24,14 @@ export function CVCard({
   onDeleted,
 }: CVCardProps) {
   const { fetchDeleteCv } = useFetchData();
+  const router = useRouter();
 
   const handleDelete = async (cvId: string) => {
     const deleted = await fetchDeleteCv(cvId);
     if (deleted) {
       onDeleted?.(cvId);
     }
+    router.refresh();
   };
 
   const getStatusBadge = (status: string) => {

@@ -18,9 +18,9 @@ import {
   SelectValue,
 } from "../ui/select";
 import { experienceLevels } from "@/const";
-import { useUserContext } from "@/context/user-context";
+import { useUserContextResolved } from "@/context/user-context";
 import { useFetchData } from "@/hooks/fetch-data";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 const formSchema = z.object({
@@ -35,23 +35,47 @@ const formSchema = z.object({
 
 const JOB_UPLOAD_DRAFT_KEY = "job-upload-draft";
 
-function JobUploadForm() {
-  const { user } = useUserContext();
+interface JobUploadFormProps {
+  title?: string;
+  position?: string;
+  company?: string;
+  remote?: boolean;
+  experienceLevel?: string;
+  bestCvId?: string;
+  description?: string;
+}
+function JobUploadForm(initialValues?: JobUploadFormProps) {
+  const user = useUserContextResolved();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [cvs, setCvs] = useState<{ id: string; originalName: string }[]>([]);
   const { fecthCvs, loading } = useFetchData();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Obtener valores iniciales desde search params o props
+  const getInitialValues = () => {
+    const queryTitle = searchParams.get("title");
+    const queryPosition = searchParams.get("position");
+    const queryCompany = searchParams.get("company");
+    const queryRemote = searchParams.get("remote");
+    const queryExperienceLevel = searchParams.get("experienceLevel");
+    const queryBestCvId = searchParams.get("bestCvId");
+    const queryDescription = searchParams.get("description");
+
+    return {
+      title: queryTitle || initialValues?.title || "",
+      position: queryPosition || initialValues?.position || "",
+      company: queryCompany || initialValues?.company || "",
+      remote: queryRemote ? queryRemote === "true" : initialValues?.remote || false,
+      experienceLevel: queryExperienceLevel || initialValues?.experienceLevel || "",
+      bestCvId: queryBestCvId || initialValues?.bestCvId || "",
+      description: queryDescription || initialValues?.description || "",
+    };
+  };
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-      position: "",
-      company: "",
-      remote: false,
-      experienceLevel: "",
-      bestCvId: "",
-      description: "",
-    },
+    defaultValues: getInitialValues(),
   });
   useEffect(() => {
     if (!user?.id) return;
@@ -71,6 +95,12 @@ function JobUploadForm() {
       isMounted = false;
     };
   }, [fecthCvs, user?.id]);
+
+  // Actualizar formulario cuando los search params cambien
+  useEffect(() => {
+    const newValues = getInitialValues();
+    form.reset(newValues);
+  }, [searchParams, form]);
 
   function onSubmit(data: z.infer<typeof formSchema>) {
     if (!user?.id) {

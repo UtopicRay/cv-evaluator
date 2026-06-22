@@ -131,7 +131,7 @@ export interface JobDraft {
 export interface Job extends JobDraft {
   id: string;
   createdAt: Date;
-  analyses?: JobCVAnalysisResponse | null;
+  analyses?: JobCVAnalysisResponse[] | null;
 }
 export interface BestMatchJobDto {
   id: string;

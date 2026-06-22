@@ -1,36 +1,47 @@
+"use client"
+
+import React, { useState } from "react";
 import { ArrowRight, CalendarDays, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import Link from "next/link";
 import { Job } from "@/type";
-import { revalidatePath } from "next/cache";
-import { deleteJob } from "@/lib/query";
 
-function JobCard({ job }: { job: Job }) {
+function JobCard({ job, onDelete }: { job: Job; onDelete?: (id: string) => void }) {
   function scoreColor(score: number) {
     if (score >= 80) return "text-emerald-600";
     if (score >= 60) return "text-amber-500";
     return "text-rose-500";
   }
-
-  function formatAnalysisDate(date: Date) {
+  function formatAnalysisDate(date: string | Date) {
     return new Intl.DateTimeFormat("es-ES", {
       day: "2-digit",
       month: "long",
       year: "numeric",
-    }).format(date);
+    }).format(new Date(date));
   }
-  
+
   const analysis = job.analyses?.[0];
   const matchScore = Math.max(
     0,
     Math.min(100, Math.round(analysis?.matchScore ?? 0)),
   );
+
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const deleteJobHandler = async () => {
-    'use server'
-    await deleteJob(job.id);
-    revalidatePath("/dashboard/jobs");
-  }
+    if (!confirm("¿Eliminar oferta?")) return;
+    try {
+      setIsDeleting(true);
+      const res = await fetch(`/api/jobs/${job.id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Error deleting job");
+      onDelete?.(job.id);
+    } catch (error) {
+      console.error("Error deleting job:", error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
  return (
     <Card className="group rounded-2xl border border-border/60 bg-card p-5 shadow-sm transition hover:shadow-md">
       <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">

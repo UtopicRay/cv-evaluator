@@ -20,7 +20,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useUserContext } from "@/context/user-context";
+import { useUserContextResolved } from "@/context/user-context";
 import { signOut } from "next-auth/react";
 
 interface DashboardLayoutProps {
@@ -31,7 +31,15 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const user = useUserContext();
+  const user = useUserContextResolved();
+
+  if (!user) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-[#f7f9fb]">
+        <p className="text-[#515f74]">Cargando información del usuario...</p>
+      </div>
+    );
+  }
 
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -40,7 +48,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     { name: "Settings", href: "/dashboard/settings", icon: Settings },
   ];
 
-  const userInitials = `${user?.name?.[0] || "A"}${user?.lastName?.[0] || ""}`;
+  const userInitials = user && user.name && user.lastName
+    ? `${user.name[0]}${user.lastName[0]}`
+    : user && user.name
+    ? user.name[0]
+    : "U";
 
   const isActivePath = (href: string) => {
     if (href === "/dashboard") {

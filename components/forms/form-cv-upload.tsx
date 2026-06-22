@@ -36,8 +36,8 @@ function FormCvUpload({
   errors,
 }: FormCvUploadProps) {
   return (
-    <div className="grid lg:grid-cols-3 gap-8 mt-8">
-      <Card className="p-8 col-span-2">
+    <div className="w-full gap-8 mt-8">
+      <Card className=" w-full p-8">
         <h2 className="text-xl font-semibold mb-6">Información del CV</h2>
 
         <div className="space-y-6">
@@ -130,9 +130,6 @@ function FormCvUpload({
           </div>
         </div>
       </Card>
-      <div className="lg:sticky lg:top-8 h-fit">
-        <UsageSummary />
-      </div>
     </div>
   );
 }

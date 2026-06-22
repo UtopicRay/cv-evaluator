@@ -199,7 +199,9 @@ export async function getBestMatchJob(
   }
 }
 
-export async function getAverageJobScore(userId: string): Promise<number | null> {
+export async function getAverageJobScore(
+  userId: string,
+): Promise<number | null> {
   try {
     // Opción 1: Usando agregación de Prisma
     const result = await prisma.jobCVAnalysis.aggregate({
@@ -212,20 +214,19 @@ export async function getAverageJobScore(userId: string): Promise<number | null>
     });
 
     // Retornar el promedio redondeado a 2 decimales, o null si no hay datos
-    return result._avg.matchScore 
-      ? Math.round(result._avg.matchScore * 100) / 100 
+    return result._avg.matchScore
+      ? Math.round(result._avg.matchScore * 100) / 100
       : null;
-
   } catch (error) {
-    console.error('Error al obtener average job score:', error);
-    throw new Error('Error al calcular el score promedio de ofertas');
+    console.error("Error al obtener average job score:", error);
+    throw new Error("Error al calcular el score promedio de ofertas");
   }
 }
 
 export async function getAverageScoreByCV(userId: string) {
   try {
     const results = await prisma.jobCVAnalysis.groupBy({
-      by: ['cvId'],
+      by: ["cvId"],
       where: {
         userId: userId,
       },
@@ -238,7 +239,7 @@ export async function getAverageScoreByCV(userId: string) {
     });
 
     // Obtener información de los CVs
-    const cvIds = results.map(r => r.cvId);
+    const cvIds = results.map((r) => r.cvId);
     const cvs = await prisma.cV.findMany({
       where: {
         id: { in: cvIds },
@@ -252,21 +253,98 @@ export async function getAverageScoreByCV(userId: string) {
     });
 
     // Combinar resultados
-    return results.map(result => {
-      const cv = cvs.find(c => c.id === result.cvId);
-      return {
-        cvId: result.cvId,
-        cvName: cv?.originalName || cv?.fileName || 'Unknown',
-        cvOverallScore: cv?.overallScore,
-        averageMatchScore: result._avg.matchScore 
-          ? Math.round(result._avg.matchScore * 100) / 100 
-          : null,
-        jobCount: result._count.id,
-      };
-    }).sort((a, b) => (b.averageMatchScore || 0) - (a.averageMatchScore || 0));
-
+    return results
+      .map((result) => {
+        const cv = cvs.find((c) => c.id === result.cvId);
+        return {
+          cvId: result.cvId,
+          cvName: cv?.originalName || cv?.fileName || "Unknown",
+          cvOverallScore: cv?.overallScore,
+          averageMatchScore: result._avg.matchScore
+            ? Math.round(result._avg.matchScore * 100) / 100
+            : null,
+          jobCount: result._count.id,
+        };
+      })
+      .sort((a, b) => (b.averageMatchScore || 0) - (a.averageMatchScore || 0));
   } catch (error) {
-    console.error('Error al obtener average score by CV:', error);
-    throw new Error('Error al calcular scores por CV');
+    console.error("Error al obtener average score by CV:", error);
+    throw new Error("Error al calcular scores por CV");
   }
+}
+
+export async function CreateJob({
+  userId,
+  title,
+  description,
+  position,
+  company,
+  remote,
+  cvId,
+  experienceLevel,
+}: {
+  userId: string;
+  title: string;
+  description: string;
+  position: string;
+  company?: string | null;
+  remote?: boolean;
+ cvId?: string|null;
+  experienceLevel?: string|null;
+}) {
+  const job = await prisma.job.create({
+    data: {
+      userId,
+      title,
+      description,
+      position,
+      company,
+      remote,
+      cvId,
+      experienceLevel,
+    },
+    select: {
+      id: true,
+    },
+  });
+  return job;
+}
+
+export async function UpdateJob({
+  title,
+  description,
+  position,
+  company,
+  remote,
+  cvId,
+  experienceLevel,
+  jobId,
+}: {
+  title: string;
+  description: string;
+  position: string;
+  company?: string | null;
+  remote?: boolean;
+  cvId?: string|null;
+  experienceLevel?: string|null;
+  jobId: string;
+}) {
+  const job = await prisma.job.update({
+    where: {
+      id: jobId,
+    },
+    data: {
+      title,
+      description,
+      position,
+      company,
+      remote,
+      cvId,
+      experienceLevel,
+    },
+    select: {
+      id: true,
+    },
+  });
+  return job;
 }

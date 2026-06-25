@@ -61,6 +61,9 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
   },
+  pages: {
+    signIn: "/login",
+  },
   jwt: {
     encode: async (params) => {
       if (params.token?.credentials) {

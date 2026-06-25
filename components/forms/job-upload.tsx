@@ -43,6 +43,7 @@ interface JobUploadFormProps {
   experienceLevel?: string;
   bestCvId?: string;
   description?: string;
+  jobId?: string; // Optional jobId for editing an existing job
 }
 function JobUploadForm(initialValues?: JobUploadFormProps) {
   const user = useUserContextResolved();
@@ -70,6 +71,7 @@ function JobUploadForm(initialValues?: JobUploadFormProps) {
       experienceLevel: queryExperienceLevel || initialValues?.experienceLevel || "",
       bestCvId: queryBestCvId || initialValues?.bestCvId || "",
       description: queryDescription || initialValues?.description || "",
+      jobId: searchParams.get("jobId") || initialValues?.jobId || "",
     };
   };
 

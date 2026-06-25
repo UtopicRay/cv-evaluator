@@ -8,6 +8,7 @@ import {
 import { getUser } from "@/lib/fetching/fetch";
 import { getJobsByUserId } from "@/lib/query";
 import JobCard from "@/components/jobs/job-card";
+import JobList from "@/components/jobs/job-list";
 
 
 
@@ -36,25 +37,8 @@ export default async function JobsPage() {
         </Button>
       </header>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <Button variant="secondary" className="rounded-full font-semibold">
-          <Filter className="mr-2 h-4 w-4" />
-          Mas recientes
-        </Button>
-        <Button variant="outline" className="rounded-full font-semibold">
-          Mayor Score
-        </Button>
-        <Button variant="outline" className="rounded-full font-semibold">
-          Menor Score
-        </Button>
-      </div>
-
       {hasJobs ? (
-        <section className="space-y-3">
-          {jobs.map((job) => (
-            <JobCard key={job.id} job={job} />
-          ))}
-        </section>
+        <JobList jobs={jobs} />
       ) : (
         <Card className="rounded-2xl border border-dashed border-border/80 bg-card p-8">
           <div className="flex flex-col gap-3 text-center md:text-left">

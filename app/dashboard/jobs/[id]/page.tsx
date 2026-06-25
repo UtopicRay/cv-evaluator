@@ -77,9 +77,9 @@ export default async function JobDetailPage({ params }: DetailPageProps) {
           </Button>
            <Button asChild>
              <Link 
-               href={`/dashboard/jobs/upload?title=${encodeURIComponent(job.title)}&position=${encodeURIComponent(job.position)}&company=${encodeURIComponent(job.company || "")}&remote=${job.remote}&experienceLevel=${encodeURIComponent(job.experienceLevel || "")}&description=${encodeURIComponent(job.description || "")}`}
+               href={`/dashboard/jobs/upload?title=${encodeURIComponent(job.title)}&position=${encodeURIComponent(job.position)}&company=${encodeURIComponent(job.company || "")}&remote=${job.remote}&experienceLevel=${encodeURIComponent(job.experienceLevel || "")}&description=${encodeURIComponent(job.description || "")}&jobId=${encodeURIComponent(job.id || "")}`}
              >
-               Analizar otro CV
+               Analizar con otro CV
              </Link>
            </Button>
         </div>

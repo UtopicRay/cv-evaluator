@@ -3,23 +3,27 @@
 import { type ReactNode, useState } from "react";
 import {
   BarChart3,
-  Bell,
-  CircleHelp,
   History,
   LayoutDashboard,
   LifeBuoy,
   LogOut,
   Plus,
-  Search,
-  Settings,
   Menu,
   X,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+
 import { useUserContextResolved } from "@/context/user-context";
 import { signOut } from "next-auth/react";
 
@@ -45,7 +49,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "CV Analysis", href: "/dashboard/cv", icon: BarChart3 },
     { name: "Jobs", href: "/dashboard/jobs", icon: History },
-    { name: "Settings", href: "/dashboard/settings", icon: Settings },
+
   ];
 
   const userInitials = user && user.name && user.lastName
@@ -72,34 +76,34 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       )}
 
       <header className="fixed left-0 top-0 z-40 hidden h-20 w-full items-center justify-between border-b border-[#c1c6d7]/30 bg-[#f7f9fb]/95 px-6 backdrop-blur lg:flex">
-        <div className="ml-64 flex items-center gap-6">
-          <div className="relative w-80">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#515f74]" />
-            <Input
-              placeholder="Buscar analisis..."
-              className="h-10 rounded-full border-0 bg-[#f2f4f6] pl-9 text-sm shadow-none focus-visible:ring-1 focus-visible:ring-[#0059bb]/30"
-            />
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 pr-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full text-[#515f74] hover:bg-[#f2f4f6]"
-          >
-            <Bell className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full text-[#515f74] hover:bg-[#f2f4f6]"
-          >
-            <CircleHelp className="h-5 w-5" />
-          </Button>
-          <div className="ml-2 flex h-9 w-9 items-center justify-center rounded-full bg-[#0070ea] text-xs font-bold text-white">
-            {userInitials}
-          </div>
+        <div className="ml-64" />
+        
+        <div className="flex items-center gap-3 pr-4">
+          <Link href="/dashboard/upload">
+            <Button size="sm" className="bg-[#0059bb] text-white hover:bg-[#0070ea]">
+              <Plus className="mr-2 h-4 w-4" />
+              Nuevo Análisis
+            </Button>
+          </Link>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0070ea] text-xs font-bold text-white cursor-pointer hover:bg-[#0059bb] transition-colors">
+                {userInitials}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuLabel>
+                <p className="font-medium">{user.name}</p>
+                <p className="text-xs text-muted-foreground">{user.email}</p>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => signOut()} variant="destructive">
+                <LogOut className="h-4 w-4" />
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 

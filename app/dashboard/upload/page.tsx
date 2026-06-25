@@ -5,19 +5,17 @@ import { UploadStepper } from "@/components/upload-stepper";
 import { FileUploadZone } from "@/components/file-upload-zone";
 import { Button } from "@/components/ui/button";
 import {
-  Briefcase,
-  Building2,
   ChevronRight,
   Home,
-  HelpCircle,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import FormCvUpload from "@/components/forms/form-cv-upload";
 import { Card } from "@/components/ui/card";
 import { AnalyzingAnimation } from "@/components/analyzing-animation";
 import Link from "next/link";
 import UseAnalizeDocument from "@/hooks/analize-document";
+import { useUserContextResolved } from "@/context/user-context";
 
 export default function UploadPage() {
   const router = useRouter();
@@ -29,16 +27,8 @@ export default function UploadPage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { analyzeCVWithAI } = UseAnalizeDocument();
-  const [userId, setUserId] = useState<string | null>(null);
+ const user=useUserContextResolved();
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const user = JSON.parse(storedUser);
-      setUserId(user.id);
-    }
-  }, []);
 
   const isFormValid =
     jobTitle.length >= 3 && jobTitle.length <= 100 && industry !== "";
@@ -91,7 +81,7 @@ export default function UploadPage() {
         }));
         return;
       }
-      if (!userId) {
+      if (!user?.id) {
         setErrors((prev) => ({
           ...prev,
           file: "No se pudo identificar al usuario",
@@ -107,7 +97,7 @@ export default function UploadPage() {
         const cvBase64 = await fileToBase64(file);
         const uploadFormData = new FormData();
         uploadFormData.append("file", file);
-        uploadFormData.append("userId", userId);
+        uploadFormData.append("userId", user?.id || "");
 
         const uploadResponse = await fetch("/api/upload", {
           method: "POST",
@@ -135,7 +125,7 @@ export default function UploadPage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            userId,
+            userId: user?.id || "",
             fileName: uploadResult.filePath,
             originalName: file.name,
             fileSize: file.size,
@@ -195,7 +185,7 @@ export default function UploadPage() {
         {/* Main Content */}
         <div className="flex w-full items-center justify-center">
           {/* Form Section */}
-          <div className="space-y-6">
+          <div className="space-y-6 w-full">
             {/* Information Form */}
             {currentStep === 1 && (
               <FormCvUpload

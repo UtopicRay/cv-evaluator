@@ -18,6 +18,7 @@ type JobDraft = {
   remote?: boolean
   cvId?: string | null
   experienceLevel?: string | null
+  jobId?: string | null
 }
 
 function isStepDone(stepThreshold: number, progress: number) {

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import LeftSideInfo from "@/components/left-side-info";
 import { infoDetails } from "@/const";
 import LoginForm from "@/components/forms/login";
@@ -14,7 +15,9 @@ export default function LoginPage() {
         />
 
         {/* Right side - Login Form */}
-        <LoginForm />
+        <Suspense>
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
   );

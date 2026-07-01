@@ -65,7 +65,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
     return pathname === href || pathname.startsWith(`${href}/`);
   };
-
+  function handleSignOut() {
+    signOut();
+    router.push("/");
+  }
   return (
     <div className="min-h-screen bg-[#f7f9fb] text-[#191c1e]">
       {sidebarOpen && (
@@ -98,7 +101,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 <p className="text-xs text-muted-foreground">{user.email}</p>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => signOut()} variant="destructive">
+              <DropdownMenuItem onClick={() => handleSignOut()} variant="destructive">
                 <LogOut className="h-4 w-4" />
                 Logout
               </DropdownMenuItem>

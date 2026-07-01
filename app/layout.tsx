@@ -5,6 +5,8 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { UserContextProvider } from "@/context/user-context";
 import { getUser } from "@/lib/fetching/fetch";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Cvscore",
@@ -19,12 +21,15 @@ export default function RootLayout({
 }>) {
    const userPromise = getUser() // Don't await
   return (
-    <html lang="en">
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <UserContextProvider userPromise={userPromise}>
-          {children}
-          <Analytics />
-        </UserContextProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <UserContextProvider userPromise={userPromise}>
+            {children}
+            <Analytics />
+          </UserContextProvider>
+          <Toaster richColors position="top-right" />
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -1,7 +1,6 @@
 "use client"
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
@@ -27,7 +26,6 @@ const signInSchema = z
   .strict()
 
 export default function LoginForm() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
@@ -55,7 +53,7 @@ export default function LoginForm() {
 
       toast.success("Inicio de sesión correcto", { id: toastId })
       const callback = searchParams?.get("callbackUrl") || "/dashboard"
-      router.push(callback)
+      window.location.href = callback
     } catch {
       toast.error("No se pudo iniciar sesión", { id: toastId })
     }
